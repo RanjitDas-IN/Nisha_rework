@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Speech Recognition</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            /* background: url('dr1hv3peccv91.jpg') no-repeat center center fixed; */
+
+            background:
+                radial-gradient(circle, #1f1c2c, #928dab),
+                /* radial-gradient(circle, #9100ff69, #9100ff00),  */
+                /* Gradient Layer */
+                /* url('images.jpeg') no-repeat center center fixed; */
+                url('Wikipedia_Logo_as_ASCII_Art.png') no-repeat center center fixed;
+
+
+            background-size: cover, cover;
+            background-blend-mode: overlay;
+            background-size: 80% 80%;
+
+
+            color: #333;
+        }
+    </style>
+</head>
+
+<body>
+    <button id="start" onclick="startRecognition()">Start Recognition</button>
+    <button id="end" onclick="stopRecognition()">Stop Recognition</button>
+    <p id="output"></p>
+    <script>
+        const output = document.getElementById('output');
+        let recognition;
+
+        function startRecognition() {
+            recognition = new webkitSpeechRecognition() || new SpeechRecognition();
+            recognition.lang = 'en';
+            recognition.continuous = true;
+
+            recognition.onresult = function (event) {
+                const transcript = event.results[event.results.length - 1][0].transcript;
+                output.textContent += transcript;
+            };
+
+            recognition.onend = function () {
+                recognition.start();
+            };
+            recognition.start();
+        }
+
+        function stopRecognition() {
+            recognition.stop();
+            output.innerHTML = "";
+        }
+    </script>
+</body>
+
+</html>
