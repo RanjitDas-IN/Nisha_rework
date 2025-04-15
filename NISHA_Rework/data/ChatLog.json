@@ -1,0 +1,10 @@
+[
+    {
+        "role": "user",
+        "content": "What is your response time"
+    },
+    {
+        "role": "assistant",
+        "content": "My response time is 2-5 ms(milli Seconds)"
+        }
+]

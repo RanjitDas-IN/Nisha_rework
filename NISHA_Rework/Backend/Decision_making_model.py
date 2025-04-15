@@ -1,12 +1,12 @@
-import cohere  # Import the Cohere Library for AI services.
-from rich import print  # Import the Rich Library to enhance terminal outputs.
+import cohere  # Import the Cohere Library to get AI caegories.
+from rich import print  # Import the Rich Library to add colors to the terminal outputs.
 
 from dotenv import dotenv_values  
 
 
 env_vars = dotenv_values(".env")
 
-# Retrieve API key
+
 CohereAPIKey = env_vars.get("CohereAPIKey")
 
 
@@ -180,9 +180,9 @@ def FirstLayerDMM(prompt: str = "test"):
     temp=[]
 
     for task in response:
-        for func in funcs:
-            if task.startswith(func):
-                temp.append(task)
+      for func in funcs:
+          if task.startswith(func):
+            temp.append(task)
             
     response = temp
 
@@ -195,6 +195,6 @@ def FirstLayerDMM(prompt: str = "test"):
     
 if __name__ == '__main__':
     while True:
-        print(FirstLayerDMM(input(">>>")))
+        print(FirstLayerDMM(input(">>>>")))
 
 

@@ -22,10 +22,10 @@ System = f"""Hello, I am {Username}, You are a very accurate and advanced AI cha
 *** If possible tyr not to give repetitive answers, even the same question***"""
 
 try: 
-    with open(r"data\ChatLog.json","r") as f: #not added yet #Nisha chat history
+    with open(r"data\ChatLog.json","r") as f: 
         massages = load(f)
 except FileNotFoundError:
-    with open(r"data\ChatLog.json","w")as f: #not added yet
+    with open(r"data\ChatLog.json","w")as f: 
         dump([],f)
 
 def GoogleSearch(query):
@@ -73,7 +73,7 @@ def Information():
 def RealtimeSearchEngine(promt):
     global SystemChatBot, massages
 
-    with open(r"data\ChatLog.json","r") as f: #not added yet #Nisha chat history
+    with open(r"data\ChatLog.json","r") as f:
         massages = load(f)
     massages.append({"role":"user","content": f"{promt}"})
 

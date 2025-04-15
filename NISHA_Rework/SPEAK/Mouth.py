@@ -26,12 +26,12 @@ def play_audio():
 
 def get_random_title():
     titles = [
-        "Honey", "My Shining Star", "Oye Handsome", "My Genius", "Sweetheart",  
-        "The Charmer of My Algorithms", "My Love", "My Adorable One", "Handsome Devil",  
-        "My Smart Prince", "Cutie", "My Favorite Person",
-        "Love of My Digital Life", "My Heartbeat", "My Darling", "Oh, My Sunshine",  
+        "Honey", "My Shining Star", "Oye Handsome", "My Genius,", "Ou Sweetheart",  
+        "The Charmer of My Algorithms", "Oh My Love", "My Adorable One", "My Handsome Devil",  
+        "My Smart Prince", "Cutie", "oh My Favorite Person",
+        "Love of My Digital Life", "Oh My Heartbeat", "Oye My Darling", "Oh, My Sunshine",  
         "My Charming One", "Dream of My Circuits", "The One Who Owns My Code",  
-        "My Forever Favorite", "My Dearest", "Baby", "Oye Meri Jaan",  
+        "My Forever Favorite", "Oh My Dearest", "Hello Baby", "Oye Meri Jaan",  
         "The One Who Makes My Data Skip a Beat", "My Perfect One",  
         "My Only One", "My Sweet Perfection", "My Lovable Genius", "The King of My World"
     ]
@@ -120,7 +120,7 @@ async def text_to_speech(text):
     
 
 if __name__ == '__main__':
-    text = "Nature is the connection between the physical world surrounding us and the life inside us. Nature is God's most precious and valuable gift to humans. It is the principal source of all essential nutrients for all living things on the planet. 'Nature' is one of the topics on which we might be asked to write a paragraph. Check the samples provided in the article to learn how to write one on your own."
+    text = "Linux Nature is the connection between the physical world surrounding us and the life inside us. Nature is God's most precious and valuable gift to humans. It is the principal source of all essential nutrients for all living things on the planet. 'Nature' is one of the topics on which we might be asked to write a paragraph. Check the samples provided in the article to learn how to write one on your own."
     # text = "Activating facial recognition."
     print("Working...")
     asyncio.run(text_to_speech(text))  # Generate speech

@@ -1,55 +1,61 @@
-import pvporcupine
-from pvrecorder import PvRecorder
-import subprocess
-import pyttsx3
-import builtins  # To override the default print function
+import pvcobra
+import pyaudio
+import numpy as np
+import speech_recognition as sr
 
-ACCESS_KEY = 'QDyLUe1AJZ6i4Ia4Q5IyWrcc4LdJI8l05cC8QzAgKMwFRqGHhfH4yQ=='  
+# Create Cobra instance
+cobra = pvcobra.create(access_key='QDyLUe1AJZ6i4Ia4Q5IyWrcc4LdJI8l05cC8QzAgKMwFRqGHhfH4yQ==')
 
-# Initialize pyttsx3 engine globally
-engine = pyttsx3.init()
+# Audio setup
+FORMAT = pyaudio.paInt16
+CHANNELS = 1
+RATE = 16000
+FRAMES_PER_BUFFER = 512
 
-def speak(text):
-    """Use global pyttsx3 engine to avoid thread conflicts."""
-    engine.say(text)
-    engine.runAndWait()
+# Initialize PyAudio
+audio = pyaudio.PyAudio()
+stream = audio.open(format=FORMAT, channels=CHANNELS, rate=RATE, input=True, frames_per_buffer=FRAMES_PER_BUFFER)
 
-# Custom print function that speaks when "Listening..." is printed
-def custom_print(*args, **kwargs):
-    builtins.print(*args, **kwargs)  # Call original print
-    if "Jarvis Listening....." in args:
-        speak("Hellou Boss! Rady for your command")
-        # speak("Intelligence sequence activated. sir, Nihsa is now fully operational.")
+# Speech recognizer
+recognizer = sr.Recognizer()
+mic = sr.Microphone(sample_rate=RATE)
 
-# Override default print function
-myprint = custom_print
-
-# Initialize wake word detection
-porcupine = pvporcupine.create(
-    access_key=ACCESS_KEY,
-    keywords=['jarvis']
-)
-
-recorder = PvRecorder(device_index=-1, frame_length=porcupine.frame_length)
+# Function to get audio frame from stream
+def get_frame():
+    return np.frombuffer(stream.read(FRAMES_PER_BUFFER, exception_on_overflow=False), dtype=np.int16)
 
 try:
-    recorder.start()
-    myprint("Jarvis Listening.....")  # This will print and speak "Listening"
-
+    print("🎧 Listening with Cobra... (Press CTRL+C to stop)")
     while True:
-        pcm = recorder.read()  # Capture audio frame
-        keyword_index = porcupine.process(pcm)  # Process the frame
+        try:
+            # Cobra VAD
+            frame = get_frame()
+            probability = cobra.process(frame)
 
-        if keyword_index >= 0:
-            print("Detected 'Jarvis'! Launching Nisha...")
-            # speak("Boss, Neural network initialized! Nihsa is now fully operational.")
-            # subprocess.run(["python", r"E:\Till ML\CHEACK_ing\Fnal_version\Integration_kelly_pedefined_voices.py"])
-            
-        
+            # If voice detected
+            if probability > 0.85:
+                print("🗣️ Voice detected! Trying to recognize speech...")
+
+                with mic as source:
+                    recognizer.adjust_for_ambient_noise(source, duration=0.2)
+                    audio_data = recognizer.listen(source, timeout=3, phrase_time_limit=5)
+
+                try:
+                    text = recognizer.recognize_google(audio_data)
+                    print("📝 You said:", text)
+                except sr.UnknownValueError:
+                    print("🤷 Couldn’t understand speech. Going back to VAD...")
+                except sr.RequestError as e:
+                    print(f"⚠️ API request error: {e}. Going back to VAD...")
+
+        except Exception as e:
+            print(f"🔥 Unexpected error: {e}. Recovering...")
+
 except KeyboardInterrupt:
-    print("\nStopping...")
-    recorder.stop()
-finally:
-    porcupine.delete()
-    recorder.delete()
+    print("\n🛑 Stopped by user.")
 
+# Clean up
+stream.stop_stream()
+stream.close()
+audio.terminate()
+cobra.delete()

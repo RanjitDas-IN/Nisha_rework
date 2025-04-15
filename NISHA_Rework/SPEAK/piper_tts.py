@@ -4,11 +4,11 @@ import soundfile as sf
 
 # Define paths
 def pipertts(text:str):
-    piper_exe = r"C:\Users\ranji\Downloads\piper_windows_amd64\piper\piper.exe" # Update the path if necessary
-    model_file = r"C:\Users\ranji\Downloads\piper_windows_amd64\piper\en_US-amy-medium.onnx"
+    piper_exe = r"C:\Users\ranji\Downloads\piper_windows_amd64\piper\piper.exe" # Update the path if necessaryy
+    model_file = r"C:\Users\ranji\Downloads\piper_windows_amd64\piper\en_US-amy-medium.onnx" 
     output_wav = "output.wav"
 
-    # Run Piper
+    # Run Piper AI
 
     command = f'echo {text} | "{piper_exe}" --model "{model_file}" --output_file "{output_wav}"'
 

@@ -1,6 +1,35 @@
+#Use case
+# ✅ Detect human voice using Cobra
+# ✅ Then capture what was said using speech-to-text
+# ✅ Then print it as text
+
+
+# workflow:
+# Microphone audio
+#    │
+#    ▼
+# [Cobra VAD] — is someone speaking? (probability > 0.8?)
+#    │
+#    ▼
+# Yes → Activate [Speech Recognition]
+#    │
+#    ▼
+# Transcribe → Print text
+
+
+
+# Example Output 
+# Cobra VAD is running. Press CTRL+C to stop.
+# Voice probability: 0.05
+# Voice probability: 0.07
+# Voice probability: 0.82  ← someone is probably speaking
+# Voice probability: 0.90
+# Voice probability: 0.10
+
+
 import pvcobra
-import pyaudio
-import numpy as np
+import pyaudio #to capture audio from your microphone.
+import numpy as np #to process raw audio bytes into numeric arrays.
 
 ACCESS_KEY = 'QDyLUe1AJZ6i4Ia4Q5IyWrcc4LdJI8l05cC8QzAgKMwFRqGHhfH4yQ=='
 
