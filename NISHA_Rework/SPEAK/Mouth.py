@@ -7,12 +7,12 @@ import soundfile as sf
 
 
 output_file = "testing.mp3"
-# voice = 'en-US-JennyNeural' #fastest, takes 3.86 sec with jennyneural
+voice = 'en-US-JennyNeural' #fastest, takes 3.86 sec with jennyneural
 
 #other selected one
 # voice = 'en-US-AnaNeural' #cartoon 5 sec
 # voice = 'en-US-AvaMultilingualNeural' #takes 8-10sec but beautifull
-voice = 'en-US-EmmaMultilingualNeural' #takes 8-10sec but beautifull
+# voice = 'en-US-EmmaMultilingualNeural' #takes 8-10sec but beautifull
 # voice = 'en-US-EmmaNeural' #takes 4sec with emma
 # voice = 'de-DE-FlorianMultilingualNeural' #takes MALE time = 8-10 sec
 
@@ -120,10 +120,9 @@ async def text_to_speech(text):
     
 
 if __name__ == '__main__':
-    text = "Linux Nature is the connection between the physical world surrounding us and the life inside us. Nature is God's most precious and valuable gift to humans. It is the principal source of all essential nutrients for all living things on the planet. 'Nature' is one of the topics on which we might be asked to write a paragraph. Check the samples provided in the article to learn how to write one on your own."
+    text = "Linux Nature is the connection between the physical world surrounding us and the life inside us."
     # text = "Activating facial recognition."
     print("Working...")
-    asyncio.run(text_to_speech(text))  # Generate speech
-    #takes 4sec with jennyneural
-    play_audio()  # Play the generated audio
+    asyncio.run(text_to_speech(text))
+    play_audio()
     print(text)
