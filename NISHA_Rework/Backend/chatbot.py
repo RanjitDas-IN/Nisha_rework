@@ -15,7 +15,7 @@ User_Github_Link = env_vars.get('My_Github_Link')
 
 client = Groq(api_key=Groqapi)
 
-# client = Groq(api_key="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")
+# client = Groq(api_key="gsk_uZWsR9Bj750kUsAFZSblPUSZZ")
 massages =[]
 
 colors = [

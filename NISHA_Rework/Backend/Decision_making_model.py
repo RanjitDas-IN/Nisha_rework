@@ -1,5 +1,5 @@
-import cohere  # Import the Cohere Library to get AI caegories.
-from rich import print  # Import the Rich Library to add colors to the terminal outputs.
+import cohere  # Import the Cohere Library to get AI caegories
+from rich import print  # Import the Rich Library to add colors to the terminal outputs
 
 from dotenv import dotenv_values  
 
