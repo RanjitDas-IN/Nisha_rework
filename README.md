@@ -100,7 +100,7 @@ Nisha takes her cues from the latest and greatest in AI. Here’s what’s been 
 
 ## License
 
-This project is licensed under the Ranjit Das License.
+This project is licensed under the **Ranjit Das** License.
 
 🔐 Feel like customizing Nisha? Go ahead — but don’t skip the fine print.
 [Read the license](./LICENSE) before you turn dreams into drama.
