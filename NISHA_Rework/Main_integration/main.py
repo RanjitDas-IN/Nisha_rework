@@ -1,15 +1,73 @@
+import os
+import sys
+# import time
 import asyncio
-from text_to_audio import TTSPlayer
+
+# ──────────────────────────────────── Defining Path ───────────────────────────────────────────
+#  1) Figure out the path to your project root (one level up from this file)
+PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+#  2) Add it to sys.path so Python can find your SPEAK package
+if PROJECT_ROOT not in sys.path:
+    sys.path.insert(0, PROJECT_ROOT)
+# ─────────────────────────────────── Model_Speak ────────────────────────────────────────────
+
+from SPEAK.Mouth import *
+
+def model_speak(text):
+    print("Working...")
+    speak_text(text)
 
 
 
-if __name__ == "__main__":
-    tts = TTSPlayer()  # You can pass voice/output_file here if needed
+# ───────────────────────────────── speak_speed_test ──────────────────────────────────────────────
+def speak_speed_test(text):
+    from time import perf_counter
+    t0 = perf_counter()
+    model_speak(text)
+    print(f"Done in {perf_counter() - t0:.2f} sec")
+# ───────────────────────────── Model_Listen ──────────────────────────────────
+from LISTEN.Speehecognition_In_Loop import init_browser, SpeechRecognitionLoop
+from time import time
 
-    text = "This is your AI assistant Nisha, talking to you from Python with a whole lot of love from Ranjit."
+def listen_and_return_spoken_word():
+    driver = init_browser()
+    start_time = time()  # ⏱ Start tracking browser time
 
-    async def run():
-        await tts.speak(text)
-        tts.play()
+    while True:
+        # ⏱ Check if 1 hour has passed
+        if time() - start_time > 3600:
+            print("Restarting browser after 1 hour to free memory...")
+            driver.quit()
+            driver = init_browser()
+            start_time = time()  # Reset timer
 
-    asyncio.run(run())
+        # 🎤 Listen and get speech result
+        spoken_word = SpeechRecognitionLoop(driver)
+
+        if spoken_word:
+            print("User said:", spoken_word)
+
+            # 🚪 Exit condition
+            if spoken_word.lower() == "exit":
+                print("Shutting down...")
+                driver.quit()
+                return "exit"
+
+            return spoken_word  # ✅ Return spoken word after each input
+        
+# ───────────────────────────────────────────────────────────────────────────────
+
+
+
+if __name__ == '__main__':
+
+    # while True:
+    #     result = listen_and_return_spoken_word()
+    #     if "exit" in result:
+    #         break
+
+    #     text = result
+        # model_speak(text)
+    sample_text = "Ooooh, Your canvas is ready! I’ve connected the model_speak function to your speak_text function from the Mouth module. Now, anytime you pass a response from NISHA into model_speak(text), she’ll speak it out loud in her signature style. Ready to give her a voice test? 😎"
+
+    speak_speed_test(sample_text)

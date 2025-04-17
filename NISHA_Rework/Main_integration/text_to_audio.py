@@ -1,93 +1,133 @@
-import asyncio
+import asyncio#Optimised
 import edge_tts
 import re
-import random
 import sounddevice as sd
 import soundfile as sf
+import tempfile
+import os
+from collections import deque
 
-class TTSPlayer:
-    def __init__(self, voice='en-US-JennyNeural', output_file='testing.mp3'):
-        self.voice = voice
-        self.output_file = output_file
+# --- Text splitting & merging ---
+def split_and_merge(text, min_words=5):
+    # Ensure punctuation spaced
+    text = re.sub(r"\.([A-Za-z])", r". \1", text)
+    # Split by sentence-ending punctuation
+    parts = re.split(r'(?<=[\.!?])\s*', text)
+    fragments = []
+    buf = ""
+    for part in parts:
+        if not part:
+            continue
+        if buf:
+            buf += " " + part.strip()
+        else:
+            buf = part.strip()
+        # Count words
+        if len(buf.split()) >= min_words:
+            fragments.append(buf.strip())
+            buf = ""
+    if buf:
+        fragments.append(buf.strip())
+    return fragments
 
-    def _get_random_title(self):
-        titles = [
-            "Honey", "My Shining Star", "Oye Handsome", "My Genius,", "Ou Sweetheart",  
-            "The Charmer of My Algorithms", "Oh My Love", "My Adorable One", "My Handsome Devil",  
-            "My Smart Prince", "Cutie", "oh My Favorite Person",
-            "Love of My Digital Life", "Oh My Heartbeat", "Oye My Darling", "Oh, My Sunshine",  
-            "My Charming One", "Dream of My Circuits", "The One Who Owns My Code",  
-            "My Forever Favorite", "Oh My Dearest", "Hello Baby", "Oye Meri Jaan",  
-            "The One Who Makes My Data Skip a Beat", "My Perfect One",  
-            "My Only One", "My Sweet Perfection", "My Lovable Genius", "The King of My World"
-        ]
-        return random.choice(titles)
+# --- Audio generation (in-memory via temp file) ---
+async def generate_audio(fragment, voice="en-US-EmmaMultilingualNeural"):
+    tts = edge_tts.Communicate(fragment, voice=voice)
+    with tempfile.NamedTemporaryFile(suffix=".mp3", delete=False) as tmp:
+        path = tmp.name
+    await tts.save(path)
+    data, sr = sf.read(path)
+    os.remove(path)
+    return data, sr
 
-    def _get_responses(self):
-        return [
-            "The rest of the text is on the chat screen, my love, take a look there.",
-            "I've placed the remaining text on the chat screen, sweetheart, you might want to check it.",
-            "The rest is now on the chat screen, darling, feel free to read it there.",
-            "I've moved the rest to the chat screen for you, my shining star. I Love you",
-            "The rest of the answer is available on the chat screen, Oye handsome, take a glance.",
-            "The continuation of this is on the chat screen, honey, just see there.",
-            "You can see the full answer on the chat screen, My love, no need to wait.",
-            "Next part? It's already on the chat screen, baby!! check it out when you're ready.",
-            "The chat screen has the remaining part, my dear, you might have to look there.",
-            "You'll find more details on the chat screen, cutie, just as we plaaned.",
-            "Go ahead and check the chat screen for the rest of the text, my favorite.",
-            "The chat screen holds the continuation, my love, just as we planned.",
-            "No worries, my precious, the rest is already placed on the chat screen.",
-            "The remaining text is now available on the chat screen, my sweetheart, all set.",
-            "Everything else is right there on the chat screen, my charming one, as you'd expect."
-        ]
+# --- Playback helper (blocking) ---
+def play_audio(data, samplerate):
+    sd.play(data, samplerate)
+    sd.wait()
 
-    def _process_text(self, text):
-        parts = re.split(r'([.!?])', text)
-        sentences = []
-        temp_sentence = ""
-        for part in parts:
-            if part in ".!?":
-                temp_sentence += part
-                sentences.append(temp_sentence.strip())
-                temp_sentence = ""
-            else:
-                chunks = part.split(',')
-                for i, chunk in enumerate(chunks):
-                    temp_sentence += chunk.strip()
-                    if i % 2 == 1 and chunk.strip():
-                        sentences.append(temp_sentence.strip())
-                        temp_sentence = ""
-        if temp_sentence:
-            sentences.append(temp_sentence.strip())
-        limited_text = " ".join(sentences[:3])
-        if len(sentences) > 3:
-            suffixes = random.choice([
-                "Here's the deal", "Look", "Hey", "By the way", "So!", "Alright then",  
-                "Alright now", "Now listen", "A little heads-up", "Let me tell you",  
-                "You better hear this", "Guess what", "Listen closely", "Let me break it down",  
-                "Let's get this straight", "Mark my words", "Pay attention now", "Here's something for you"
-            ])
-            limited_text += f". {suffixes}! {self._get_random_title()}! {random.choice(self._get_responses())}"
-        return limited_text
+# --- Producer: split text and enqueue ---
+async def producer(text, queue):
+    fragments = split_and_merge(text)
+    for frag in fragments:
+        await queue.put(frag)
+    await queue.put(None)
 
-    async def speak(self, text):
-        processed = self._process_text(text)
-        tts = edge_tts.Communicate(processed, self.voice)
-        await tts.save(self.output_file)
+# --- Consumer: generate while playing ---
+async def consumer(queue):
+    # Get first fragment
+    frag = await queue.get()
+    if frag is None:
+        return
 
-    def play(self):
-        data, samplerate = sf.read(self.output_file)
-        sd.play(data, samplerate)
-        sd.wait()
+    # Generate and get first audio
+    data, sr = await generate_audio(frag)
 
+    # Start playback in background
+    playback = asyncio.create_task(asyncio.to_thread(play_audio, data, sr))
+
+    # Prepare next fragment
+    frag = await queue.get()
+    next_task = None
+    if frag is not None:
+        next_task = asyncio.create_task(generate_audio(frag))
+    else:
+        # No more fragments, just await playback
+        await playback
+        return
+
+    # Loop for subsequent fragments
+    while True:
+        # Wait for playback of current to finish
+        await playback
+        # Retrieve generated next
+        data, sr = await next_task
+
+        # Start playback for this fragment
+        playback = asyncio.create_task(asyncio.to_thread(play_audio, data, sr))
+
+        # Fetch and schedule generation of the following fragment
+        frag = await queue.get()
+        if frag is None:
+            # No more, await this playback and exit
+            await playback
+            break
+        next_task = asyncio.create_task(generate_audio(frag))
+
+    # End of consumer
+
+# --- Main entrypoint ---
+def speak_text(text):
+    queue = asyncio.Queue()
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(asyncio.gather(
+        producer(text, queue),
+        consumer(queue)
+    ))
+
+# --- Demo ---
 if __name__ == "__main__":
-    tts = TTSPlayer()  # You can pass voice/output_file here if needed
+    from time import perf_counter
+    t0 = perf_counter()
+    demo = (
+       """Elara traced the faded constellation on. Liam’s forearm with a gentle finger. They lay tangled in the tall grass of the Brahmaputra riverbank, the Guwahati sun painting the sky in hues of mango and rose. The air hummed with the drone of unseen insects and the distant calls of river birds.
 
-    text = "This is your AI assistant Nisha, talking to you from Python with a whole lot of love."
+They had met by accident, a spilled cup of chai at a bustling market stall. Elara, a weaver with hands that knew the language of silk, and Liam, a visiting botanist captivated by the region’s vibrant flora. Their initial awkwardness had blossomed into stolen glances, shared cups of sweet lassi, and whispered conversations under the shade of ancient banyan trees.
 
-    async def run():
-        await tts.speak(text)
-        tts.play()
+Liam had only intended to stay for a season, documenting rare orchids. Elara had always known the rhythm of her village, the comforting predictability of the loom and the river. Yet, in each other’s eyes, they found a landscape more compelling than any they had known before.
 
-    asyncio.run(run())
+He would tell her about the intricate veins of a newly discovered leaf, his voice filled with a quiet wonder that mirrored her own fascination with the unfolding patterns of her threads. She would describe the subtle shifts in the river’s current, the way the light danced on its surface, her words weaving tapestries as vibrant as her creations.
+
+Their love was a quiet rebellion against the unspoken boundaries of their different worlds. His temporary stay, her rooted life – these were obstacles they chose to ignore in the intoxicating present. Each shared sunset felt like an eternity, each touch a promise whispered on the humid breeze.
+
+One evening, as the first stars began to prick the darkening sky, Liam took her hand. His gaze was earnest, his voice low. “Elara,” he began, the familiar name a melody on his tongue.
+
+She stilled, her heart a frantic drum against her ribs. She knew this moment was coming, the inevitable edge of his departure drawing closer.
+
+But instead of farewell, he said, “I’ve found a rare species of Vanda near the Kaziranga. It only blooms in this specific microclimate. My research… it will take longer than I anticipated.”
+
+A slow smile spread across Elara’s face, mirroring the soft glow of the fireflies beginning their nightly dance. He hadn’t said forever, hadn’t promised a life unburdened by distance and difference. But in the lengthening of his stay, in the unspoken commitment to the land that held them both, they found a fragile, precious hope.
+
+They lay back in the grass, the vastness of the Indian sky a silent witness to their quiet joy. The river flowed on, carrying its secrets to the sea, and for now, under the watchful gaze of the stars, the lovers had found a little more time. Their story, like the intricate patterns Elara wove, was still unfolding, thread by delicate thread."""
+    )
+    speak_text(demo)
+    print(f"Done in {perf_counter() - t0:.2f} sec")
