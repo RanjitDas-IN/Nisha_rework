@@ -1,4 +1,4 @@
-import asyncio#Optimised
+import asyncio      #Ultra Optimised code! take 3 sec to generate an audio for 60k+ words (60,000 words)
 import edge_tts
 import re
 import sounddevice as sd

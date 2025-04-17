@@ -1,4 +1,4 @@
-import asyncio#Optimised
+import asyncio  #Ultra Optimised code! take 3 sec to generate an audio for 60k+ words (60,000 words)
 import edge_tts
 import re
 import sounddevice as sd
@@ -129,5 +129,17 @@ A slow smile spread across Elara’s face, mirroring the soft glow of the firefl
 
 They lay back in the grass, the vastness of the Indian sky a silent witness to their quiet joy. The river flowed on, carrying its secrets to the sea, and for now, under the watchful gaze of the stars, the lovers had found a little more time. Their story, like the intricate patterns Elara wove, was still unfolding, thread by delicate thread."""
     )
-    speak_text(demo)
+    demo1= """    "Hey Ranjit, good to hear you again!",
+    "Welcome back, boss! Ready for action?",
+    "Took you long enough, Ranjit.",
+    "I was almost asleep. Finally, you spoke!",
+    "Voice match confirmed. Access granted.",
+    "Authorization successful. Hello Ranjit.",
+    "If this wasn't your voice, I was ready to call the police!",
+    "Relax, Ranjit, I know it's you. No need to shout.",
+    "Obviously it's you. Who else would dare?",
+    "No one else sounds this cool, Ranjit.",
+    "Recognized instantly. You're unforgettable.",
+    "It's you, Ranjit. Let's roll!","""
+    speak_text(demo1)
     print(f"Done in {perf_counter() - t0:.2f} sec")

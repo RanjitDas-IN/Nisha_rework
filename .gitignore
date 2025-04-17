@@ -2,3 +2,13 @@ Nisha_Virtual_Env
 Nisha_voice_pakes
 .env
 test_results.mp3
+voice1.wav
+voice2.wav
+voice3.wav
+voice4.wav
+voice5.wav
+ranjit_profile.npy
+Main_voice6.wav
+__pycache__
+pretrained_model_cache
+quantized_model_cache

@@ -68,6 +68,7 @@ if __name__ == '__main__':
 
     #     text = result
         # model_speak(text)
-    sample_text = "Ooooh, Your canvas is ready! I’ve connected the model_speak function to your speak_text function from the Mouth module. Now, anytime you pass a response from NISHA into model_speak(text), she’ll speak it out loud in her signature style. Ready to give her a voice test? 😎"
+    sample_text = "Hey Ranjit, good to hear you again!"
+    # sample_text = "Ooooh, Your canvas is ready! I’ve connected the model_speak function to your speak_text function from the Mouth module. Now, anytime you pass a response from NISHA into model_speak(text), she’ll speak it out loud in her signature style. Ready to give her a voice test? 😎"
 
     speak_speed_test(sample_text)

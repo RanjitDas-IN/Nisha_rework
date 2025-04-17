@@ -3,6 +3,38 @@ import edge_tts
 import sounddevice as sd
 import soundfile as sf
 from time import perf_counter
+
+import random
+
+nisha_lines = [
+    # Friendly
+    "NISHA: Hey Ranjit, good to hear you again!",
+    "NISHA: Welcome back, boss! Ready for action?",
+
+    # Teasing
+    "NISHA: Took you long enough, Ranjit.",
+    "NISHA: I was almost asleep. Finally, you spoke!",
+
+    # Formal
+    "NISHA: Voice match confirmed. Access granted.",
+    "NISHA: Authorization successful. Hello Ranjit.",
+
+    # Funny
+    "NISHA: If this wasn't your voice, I was ready to call the police!",
+    "NISHA: Relax, Ranjit, I know it’s you. No need to shout.",
+
+    # Confident / Sassy
+    "NISHA: Obviously it's you. Who else would dare?",
+    "NISHA: No one else sounds this cool, Ranjit.",
+    
+    # Extra bold
+    "NISHA: Recognized instantly. You’re unforgettable.",
+    "NISHA: It's you, Ranjit. Let's roll!",
+]
+
+def nisha_speak():
+    print(random.choice(nisha_lines))
+
 t0 = perf_counter()
 
 
@@ -29,14 +61,25 @@ A slow smile spread across Elara’s face, mirroring the soft glow of the firefl
 They lay back in the grass, the vastness of the Indian sky a silent witness to their quiet joy. The river flowed on, carrying its secrets to the sea, and for now, under the watchful gaze of the stars, the lovers had found a little more time. Their story, like the intricate patterns Elara wove, was still unfolding, thread by delicate thread."""
     )
     
-sample_text = "Ooooh, Your canvas is ready! I’ve connected the model_speak function to your speak_text function from the Mouth module. Now, anytime you pass a response from NISHA into model_speak(text), she’ll speak it out loud in her signature style. Ready to give her a voice test? 😎"
+sample_text = """    "Hey Ranjit, good to hear you again!",
+    "Welcome back, boss! Ready for action?",
+    "Took you long enough, Ranjit.",
+    "I was almost asleep. Finally, you spoke!",
+    "Voice match confirmed. Access granted.",
+    "Authorization successful. Hello Ranjit.",
+    "If this wasn't your voice, I was ready to call the police!",
+    "Relax, Ranjit, I know it's you. No need to shout.",
+    "Obviously it's you. Who else would dare?",
+    "No one else sounds this cool, Ranjit.",
+    "Recognized instantly. You're unforgettable.",
+    "It's you, Ranjit. Let's roll!","""
 
 
 voice = voices[0]
 output_file = "test_results.mp3"
 
 async def amain():
-    communicate = edge_tts.Communicate(text, voice)
+    communicate = edge_tts.Communicate(sample_text, voice)
     await communicate.save(output_file)
 
 loop = asyncio.get_event_loop_policy().get_event_loop()
