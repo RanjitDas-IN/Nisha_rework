@@ -8,7 +8,9 @@ import scipy.io.wavfile as wavfile
 from sklearn.metrics.pairwise import cosine_similarity
 from speechbrain.inference import EncoderClassifier
 from time import perf_counter
+import time
 import random
+import pygame
 #──────────────────────────────────── Timer start
 t0 = perf_counter()
 
@@ -26,8 +28,8 @@ from SPEAK.Mouth import *
 def model_speak(text):
     print("Working...")
     speak_text(text)
-def type_print(text, delay=0.0999):
-    import time
+def type_print(text, delay=0.02):
+    
     for char in text:
         print(char, end='', flush=True)
         time.sleep(delay)
@@ -35,15 +37,23 @@ def type_print(text, delay=0.0999):
 # ───────────────────────────────────────────────────────────────────────────────────────────────────────── 
  
 nisha_lines = [
-    "Yehh Boss Ranjit, it's you!",
-    "Confirmed, Boss. Welcome back!",
-    "Welcome back, boss! Ready for action?",
-    "Voice verified! What are we doing today?",
-    "Boss Ranjit entered the arena!",
-    "Mission start! Ranjit detected!",
-    "Hey! It's you, Ranjit. Let's roll!",
-    "Nisha here: Authentication successful, Boss!"
+    "Welcome back, Ranjit! how did you managed those boring lectures, as always? By the way, I came up with a fresh approach for your project’s logic.",
+    "Welcome back, Ranjit! I trust the lecture didn’t fully erase your will to live. While you sat through academic torture, I restructured your project logic—cleaner, sharper, and, unlike your professor’s notes, it actually makes sense.",
+
+    "Ah, Ranjit! Back from the war zone they call a lecture hall. I’ve already anticipated the next bug in your code and handled it. You’re welcome, as always.",
+
+    "Good to see you survived another round of sleep-inducing knowledge, sir. In the meantime, I took the liberty of optimizing your project logic. It's now 43% more efficient... unlike your attendance rate.",
+
+    "You're here, Ranjit. 3 lectures, 0 motivation, 1 assistant who actually does the work. I've redesigned your project’s core logic. Consider it my way of compensating for your professors.",
+
+    "Welcome back, sir. I must say, enduring those lectures daily is truly a mark of strength—or masochism. While you suffered, I simulated multiple logic paths for your project. The optimal one is ready, waiting in silence—like me."
 ]
+
+def playsound(mp3):
+    pygame.mixer.init()
+    pygame.mixer.music.load(mp3)
+    pygame.mixer.music.play()
+
 
 
 # Device setup
@@ -89,6 +99,7 @@ def is_match_from_signal(signal, fs, threshold=0.25):
 # Record from mic into RAM
 def record_voice(duration=5, sample_rate=16000):
     print(f"Recording {duration} seconds voice...")
+    playsound("NISHA_Rework/PvEagle_Voice_Auth/gpt-beep-soung_WJI67WU6.mp3")
     recording = sd.rec(int(duration * sample_rate), samplerate=sample_rate, channels=1, dtype='int16')
     sd.wait()
     print("Recording completed.")
@@ -110,10 +121,14 @@ if __name__ == "__main__":
     if match:
         print("Access Granted!")
         x=random.choice(nisha_lines)
-        model_speak(x)
+        # model_speak(x)
+        playsound("NISHA_Rework/Voice_Recognition/welcomeback_ranjit.mp3")
         type_print(x)
+        while pygame.mixer.music.get_busy():
+            time.sleep(0.1)  # Keeps checking every 0.1 sec
 
     else:
         print("Access Denied.")
 
+        
     print(f"Done in {perf_counter() - t0:.2f} sec")

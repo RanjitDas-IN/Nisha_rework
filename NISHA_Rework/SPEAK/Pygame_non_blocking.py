@@ -10,7 +10,7 @@ def print_fibonacci_with_type_effect():
 
 def playsound():
     pygame.mixer.init()
-    pygame.mixer.music.load("/home/ranjit/NISHA/testing.mp3")
+    pygame.mixer.music.load("NISHA_Rework/PvEagle_Voice_Auth/gpt-beep-soung_WJI67WU6.mp3")
     pygame.mixer.music.play()
 
 

@@ -6,31 +6,6 @@ from time import perf_counter
 
 import random
 
-nisha_lines = [
-    # Friendly
-    "NISHA: Hey Ranjit, good to hear you again!",
-    "NISHA: Welcome back, boss! Ready for action?",
-
-    # Teasing
-    "NISHA: Took you long enough, Ranjit.",
-    "NISHA: I was almost asleep. Finally, you spoke!",
-
-    # Formal
-    "NISHA: Voice match confirmed. Access granted.",
-    "NISHA: Authorization successful. Hello Ranjit.",
-
-    # Funny
-    "NISHA: If this wasn't your voice, I was ready to call the police!",
-    "NISHA: Relax, Ranjit, I know it’s you. No need to shout.",
-
-    # Confident / Sassy
-    "NISHA: Obviously it's you. Who else would dare?",
-    "NISHA: No one else sounds this cool, Ranjit.",
-    
-    # Extra bold
-    "NISHA: Recognized instantly. You’re unforgettable.",
-    "NISHA: It's you, Ranjit. Let's roll!",
-]
 
 def nisha_speak():
     print(random.choice(nisha_lines))
@@ -61,25 +36,26 @@ A slow smile spread across Elara’s face, mirroring the soft glow of the firefl
 They lay back in the grass, the vastness of the Indian sky a silent witness to their quiet joy. The river flowed on, carrying its secrets to the sea, and for now, under the watchful gaze of the stars, the lovers had found a little more time. Their story, like the intricate patterns Elara wove, was still unfolding, thread by delicate thread."""
     )
     
-sample_text = """    "Hey Ranjit, good to hear you again!",
-    "Welcome back, boss! Ready for action?",
-    "Took you long enough, Ranjit.",
-    "I was almost asleep. Finally, you spoke!",
-    "Voice match confirmed. Access granted.",
-    "Authorization successful. Hello Ranjit.",
-    "If this wasn't your voice, I was ready to call the police!",
-    "Relax, Ranjit, I know it's you. No need to shout.",
-    "Obviously it's you. Who else would dare?",
-    "No one else sounds this cool, Ranjit.",
-    "Recognized instantly. You're unforgettable.",
-    "It's you, Ranjit. Let's roll!","""
+nisha_lines = [
+    "Welcome back, Ranjit! I trust the lecture didn’t fully erase your will to live. While you sat through academic torture, I restructured your project logic—cleaner, sharper, and, unlike your professor’s notes, it actually makes sense.",
 
+    "Ah, Ranjit! Back from the war zone they call a lecture hall. I’ve already anticipated the next bug in your code and handled it. You’re welcome, as always.",
+
+    "Good to see you survived another round of sleep-inducing knowledge, sir. In the meantime, I took the liberty of optimizing your project logic. It's now 43% more efficient... unlike your attendance rate.",
+
+    "You're here, Ranjit. 3 lectures, 0 motivation, 1 assistant who actually does the work. I've redesigned your project’s core logic. Consider it my way of compensating for your professors.",
+
+    "Welcome back, sir. I must say, enduring those lectures daily is truly a mark of strength—or masochism. While you suffered, I simulated multiple logic paths for your project. The optimal one is ready, waiting in silence—like me."
+]
+
+nisha_lines2 = "Welcome back Ranjit! like everyday, how did you managed those boring lectures.  By the way, I've came up with a fresh approach for your project’s logic."
 
 voice = voices[0]
 output_file = "test_results.mp3"
 
 async def amain():
-    communicate = edge_tts.Communicate(sample_text, voice)
+    # communicate = edge_tts.Communicate(random.choice(nisha_lines), voice)
+    communicate = edge_tts.Communicate(nisha_lines2, voice)
     await communicate.save(output_file)
 
 loop = asyncio.get_event_loop_policy().get_event_loop()
