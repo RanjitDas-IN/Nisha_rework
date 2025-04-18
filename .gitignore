@@ -12,3 +12,4 @@ Main_voice6.wav
 __pycache__
 pretrained_model_cache
 quantized_model_cache
+pipeline
