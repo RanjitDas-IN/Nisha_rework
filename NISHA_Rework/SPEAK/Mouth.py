@@ -12,7 +12,7 @@ def split_and_merge(text, min_words=5):
     # Ensure punctuation spaced
     text = re.sub(r"\.([A-Za-z])", r". \1", text)
     # Split by sentence-ending punctuation
-    parts = re.split(r'(?<=[\.!?])\s*', text)
+    parts = re.split(r'(?<=[,\.!?])\s*', text)
     fragments = []
     buf = ""
     for part in parts:
@@ -129,6 +129,7 @@ A slow smile spread across Elara’s face, mirroring the soft glow of the firefl
 
 They lay back in the grass, the vastness of the Indian sky a silent witness to their quiet joy. The river flowed on, carrying its secrets to the sea, and for now, under the watchful gaze of the stars, the lovers had found a little more time. Their story, like the intricate patterns Elara wove, was still unfolding, thread by delicate thread."""
     )
+    
     demo1= """    "Hey Ranjit, good to hear you again!",
     "Welcome back, boss! Ready for action?",
     "Took you long enough, Ranjit.",

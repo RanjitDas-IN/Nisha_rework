@@ -55,7 +55,11 @@ output_file = "test_results.mp3"
 
 async def amain():
     # communicate = edge_tts.Communicate(random.choice(nisha_lines), voice)
-    communicate = edge_tts.Communicate(nisha_lines2, voice)
+    communicate = edge_tts.Communicate(
+        text="""Hello, Uday
+""",
+        voice=voice
+    )
     await communicate.save(output_file)
 
 loop = asyncio.get_event_loop_policy().get_event_loop()

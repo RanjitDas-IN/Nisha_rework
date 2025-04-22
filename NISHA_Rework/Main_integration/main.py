@@ -2,20 +2,15 @@ import os
 import sys
 # import time
 import asyncio
+import tts_accelarator as nisha     # A TTS Model buield by me, More info see my repository (tts-accelaration)
 
-# ──────────────────────────────────── Defining Path ───────────────────────────────────────────
-#  1) Figure out the path to your project root (one level up from this file)
-PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-#  2) Add it to sys.path so Python can find your SPEAK package
-if PROJECT_ROOT not in sys.path:
-    sys.path.insert(0, PROJECT_ROOT)
+
+
 # ─────────────────────────────────── Model_Speak ────────────────────────────────────────────
-
-from SPEAK.Mouth import *
 
 def model_speak(text):
     print("Working...")
-    speak_text(text)
+    nisha.speak_text(text)
 
 
 
@@ -61,14 +56,18 @@ def listen_and_return_spoken_word():
 
 if __name__ == '__main__':
 
-    # while True:
-    #     result = listen_and_return_spoken_word()
-    #     if "exit" in result:
-    #         break
+    while True:
+        result = listen_and_return_spoken_word()
+        if "exit" in result:
+            break
 
-    #     text = result
-        # model_speak(text)
-    sample_text = "Hey Ranjit, good to hear you again!"
+        text = result
+        model_speak(text)
+
+
+
+
+    # sample_text = "Hey Ranjit, good to hear you again!"
     # sample_text = "Ooooh, Your canvas is ready! I’ve connected the model_speak function to your speak_text function from the Mouth module. Now, anytime you pass a response from NISHA into model_speak(text), she’ll speak it out loud in her signature style. Ready to give her a voice test? 😎"
 
-    speak_speed_test(sample_text)
+    # speak_speed_test(sample_text)

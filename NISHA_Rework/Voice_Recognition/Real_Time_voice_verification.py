@@ -1,10 +1,20 @@
 import os
 import sys
+# ──────────────────────────────────── Defining Path ───────────────────────────────────────────
+#  1) Figure out the path to your project root (one level up from this file)
+PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+#  2) Add it to sys.path so Python can find your SPEAK package
+if PROJECT_ROOT not in sys.path:
+    sys.path.insert(0, PROJECT_ROOT)
+# ───────────────────────────────────────────────────────────────────────────────
+
+
 import torch
 import torchaudio
 import numpy as np
 import sounddevice as sd
 import scipy.io.wavfile as wavfile
+import tts_accelarator as nisha
 from sklearn.metrics.pairwise import cosine_similarity
 from speechbrain.inference import EncoderClassifier
 from time import perf_counter
@@ -15,19 +25,12 @@ import pygame
 t0 = perf_counter()
 
 
-# ──────────────────────────────────── Defining Path ───────────────────────────────────────────
-#  1) Figure out the path to your project root (one level up from this file)
-PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-#  2) Add it to sys.path so Python can find your SPEAK package
-if PROJECT_ROOT not in sys.path:
-    sys.path.insert(0, PROJECT_ROOT)
+
+
 # ─────────────────────────────────── Model_Speak ────────────────────────────────────────────
-
-from SPEAK.Mouth import *
-
 def model_speak(text):
     print("Working...")
-    speak_text(text)
+    nisha.speak_text(text)
 def type_print(text, delay=0.02):
     
     for char in text:
@@ -73,6 +76,7 @@ resampler_others = lambda fs: torchaudio.transforms.Resample(fs, 16000)
 
 # Preload profile once
 profile = np.load("NISHA_Rework/Voice_Recognition/ranjit_profile.npy")
+# profile = np.load("/home/ranjit/NISHA/Nisha_rework/NISHA_Rework/Voice_Recognition/rahul_profile.npy")
 
 # Embedding extractor from signal directly
 def get_embedding_from_tensor(signal, fs):
@@ -119,7 +123,8 @@ if __name__ == "__main__":
     print(f" Match: {match}, Accuracy: {similarity:.4f}")
 
     if match:
-        print("Access Granted!")
+        print("\033[1;32mAccess Granted!\033[0m")
+
         x=random.choice(nisha_lines)
         # model_speak(x)
         playsound("NISHA_Rework/Voice_Recognition/welcomeback_ranjit.mp3")
@@ -128,7 +133,8 @@ if __name__ == "__main__":
             time.sleep(0.1)  # Keeps checking every 0.1 sec
 
     else:
-        print("Access Denied.")
+        print("\033[1;31mAccess Denied!\033[0m")
+
 
         
     print(f"Done in {perf_counter() - t0:.2f} sec")

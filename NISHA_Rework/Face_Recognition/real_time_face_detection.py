@@ -2,7 +2,7 @@ import face_recognition
 import cv2
 
 
-ref_image = face_recognition.load_image_file("Face_Recognition\profilePic.jpg")  
+ref_image = face_recognition.load_image_file("NISHA_Rework/Face_Recognition/profilePic.jpg")  
 ref_encoding = face_recognition.face_encodings(ref_image)[0]  
 
 

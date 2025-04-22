@@ -21,7 +21,7 @@ def get_embedding(wav_path):
     return embedding.squeeze().cpu().numpy()
 
 # YOUR voice samples
-enroll_paths = ["NISHA_Rework/Voice_Recognition/voice1.wav", "NISHA_Rework/Voice_Recognition/voice2.wav", "NISHA_Rework/Voice_Recognition/voice3.wav","NISHA_Rework/Voice_Recognition/voice4.wav","NISHA_Rework/Voice_Recognition/voice5.wav"]
+enroll_paths = ["Rahul_audio/audio1.wav", "Rahul_audio/audio2.wav", "Rahul_audio/audio4.wav","Rahul_audio/audio5.wav"]
 
 # Get embeddings
 embeddings = [get_embedding(p) for p in enroll_paths]
@@ -30,5 +30,5 @@ embeddings = [get_embedding(p) for p in enroll_paths]
 voice_profile = np.mean(embeddings, axis=0)
 
 # Save the profile
-np.save("NISHA_Rework/Voice_Recognition/ranjit_profile.npy", voice_profile)
-print("Voice profile saved as ranjit_profile.npy")
+np.save("NISHA_Rework/Voice_Recognition/rahul_profile.npy", voice_profile)
+print("Voice profile saved as Rahul_profile.npy")
