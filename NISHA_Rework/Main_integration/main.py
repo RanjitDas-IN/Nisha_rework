@@ -1,73 +1,141 @@
-import os
-import sys
-# import time
-import asyncio
-import tts_accelarator as nisha     # A TTS Model buield by me, More info see my repository (tts-accelaration)
+import sys,os
+import ctypes
+import threading
+import time
+import sdl2
+import sdl2.sdlmixer
+from tts_accelarator import speak_text as model_speak
 
-
-
-# ─────────────────────────────────── Model_Speak ────────────────────────────────────────────
-
-def model_speak(text):
-    print("Working...")
-    nisha.speak_text(text)
-
-
-
-# ───────────────────────────────── speak_speed_test ──────────────────────────────────────────────
-def speak_speed_test(text):
-    from time import perf_counter
-    t0 = perf_counter()
-    model_speak(text)
-    print(f"Done in {perf_counter() - t0:.2f} sec")
-# ───────────────────────────── Model_Listen ──────────────────────────────────
-from LISTEN.Speehecognition_In_Loop import init_browser, SpeechRecognitionLoop
-from time import time
-
-def listen_and_return_spoken_word():
-    driver = init_browser()
-    start_time = time()  # ⏱ Start tracking browser time
-
-    while True:
-        # ⏱ Check if 1 hour has passed
-        if time() - start_time > 3600:
-            print("Restarting browser after 1 hour to free memory...")
-            driver.quit()
-            driver = init_browser()
-            start_time = time()  # Reset timer
-
-        # 🎤 Listen and get speech result
-        spoken_word = SpeechRecognitionLoop(driver)
-
-        if spoken_word:
-            print("User said:", spoken_word)
-
-            # 🚪 Exit condition
-            if spoken_word.lower() == "exit":
-                print("Shutting down...")
-                driver.quit()
-                return "exit"
-
-            return spoken_word  # ✅ Return spoken word after each input
-        
+# ──────────────────────────────────── Defining Path ───────────────────────────────────────────
+PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+if PROJECT_ROOT not in sys.path:
+    sys.path.insert(0, PROJECT_ROOT)
 # ───────────────────────────────────────────────────────────────────────────────
 
 
-
-if __name__ == '__main__':
-
-    while True:
-        result = listen_and_return_spoken_word()
-        if "exit" in result:
-            break
-
-        text = result
-        model_speak(text)
+# ───────────────────────────────────── Importing ──────────────────────────────────────────
 
 
+from Backend.chatbot import (colors,
+                             ChatBot,
+                             random)
+
+from Initial_Authentication import voice_Auth
+from Backend.real_time_nisha import RealtimeSearchEngine
+# ──────────────────────────────────── Play MP3 file ───────────────────────────────────────────
+
+# Setup SDL2 and SDL_mixer
+def init_audio():
+    sdl2.SDL_Init(sdl2.SDL_INIT_AUDIO)
+    sdl2.sdlmixer.Mix_OpenAudio(44100, sdl2.AUDIO_S16LSB, 2, 512)
+    sdl2.sdlmixer.Mix_AllocateChannels(1)
+
+def playsound_loop(mp3, stop_event):
+    init_audio()
+    mp3_bytes = mp3.encode('utf-8')  # SDL expects bytes
+    music = sdl2.sdlmixer.Mix_LoadMUS(mp3_bytes)
+
+    if not music:
+        raise RuntimeError("Failed to load music!")
+
+    sdl2.sdlmixer.Mix_PlayMusic(music, -1)  # loop infinitely
+    sdl2.sdlmixer.Mix_VolumeMusic(int(0.5 * sdl2.sdlmixer.MIX_MAX_VOLUME))  # 🛎️ Set volume to 30%
+
+    while not stop_event.is_set():
+        time.sleep(0.01)  # Even faster polling
+
+    sdl2.sdlmixer.Mix_HaltMusic()
+    sdl2.sdlmixer.Mix_FreeMusic(music)
+    sdl2.sdlmixer.Mix_CloseAudio()
+    sdl2.SDL_Quit()
+
+# ───────────────────────────────────────────────────────────────────────────────
 
 
-    # sample_text = "Hey Ranjit, good to hear you again!"
-    # sample_text = "Ooooh, Your canvas is ready! I’ve connected the model_speak function to your speak_text function from the Mouth module. Now, anytime you pass a response from NISHA into model_speak(text), she’ll speak it out loud in her signature style. Ready to give her a voice test? 😎"
+# ───────────────────────────────────── General Query ──────────────────────────────────────────
+def general_query():
+    global output_from_general_model
+    print(f"\n\033[1m{random.choice(colors)}{x} \033[0m")
+    output_from_general_model = ChatBot(x)
 
-    # speak_speed_test(sample_text)
+
+# ──────────────────────────────────── Main Function ──────────────────────────────────── 
+# ───────────────────────────────────── General Query ──────────────────────────────────────────
+def real_time_search_engine():
+    global output_from_realtime_model
+    output_from_realtime_model = RealtimeSearchEngine(x)
+
+
+# ──────────────────────────────────── Main Function ──────────────────────────────────── 
+
+if __name__ == "__main__":
+    # voice_Auth()
+    x=input("You: ")
+    from Backend.Decision_making_model import (FirstLayerDMM)
+    print(FirstLayerDMM(x))         #   ['general hello dear']
+    from Backend.Decision_making_model import (category)
+    if category == "general":
+        general_query()
+        print(output_from_general_model)
+
+        stop_event = threading.Event()
+        mp3_thread = threading.Thread(target=playsound_loop, args=(
+            "NISHA_Rework/PvEagle_Voice_Auth/gpt-beep-soung_WJI67WU6.mp3", stop_event), daemon=True)
+        mp3_thread.start()
+
+        model_speak(output_from_general_model)
+
+        stop_event.set()
+        mp3_thread.join()
+
+
+    elif category == "realtime" or "google" in category:
+        real_time_search_engine()
+        print(output_from_realtime_model)
+
+        stop_event = threading.Event()
+        mp3_thread = threading.Thread(target=playsound_loop, args=(
+            "NISHA_Rework/PvEagle_Voice_Auth/gpt-beep-soung_WJI67WU6.mp3", stop_event), daemon=True)
+        mp3_thread.start()
+
+        model_speak(output_from_realtime_model)
+
+        stop_event.set()
+        mp3_thread.join()
+
+    elif category == "system":
+        print("Printing statement: This is a System Task")
+
+    elif category == "open":
+        print("Printing statement: This is a Open App")
+
+
+    elif category == "close":
+        print("Printing statement: This is a Close App")
+
+
+    elif category == "play":
+        print("Printing statement: This is a Play Command")
+
+
+    elif "generate" in category:
+        print("Printing statement: This is a Image Generation")
+
+
+    elif category == "content":
+        print("Printing statement: This is a Content Creation")
+
+
+
+    elif  "youtube" in category:
+        print("Printing statement: This is a YouTube Search")
+
+
+    elif category == "reminder":
+        print("Printing statement: This is a Reminder Task")
+
+
+    else:
+        
+        print("Printing statement: This is a Unknown task")
+

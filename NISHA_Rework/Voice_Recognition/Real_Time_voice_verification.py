@@ -40,17 +40,73 @@ def type_print(text, delay=0.02):
 # ───────────────────────────────────────────────────────────────────────────────────────────────────────── 
  
 nisha_lines = [
-    "Welcome back, Ranjit! how did you managed those boring lectures, as always? By the way, I came up with a fresh approach for your project’s logic.",
-    "Welcome back, Ranjit! I trust the lecture didn’t fully erase your will to live. While you sat through academic torture, I restructured your project logic—cleaner, sharper, and, unlike your professor’s notes, it actually makes sense.",
+    "Welcome back, Mr. Survivor! While you daydreamed your way through lectures, I dreamt up a new framework for your project. Guess whose dreams are actually useful?",
 
-    "Ah, Ranjit! Back from the war zone they call a lecture hall. I’ve already anticipated the next bug in your code and handled it. You’re welcome, as always.",
+    "Ah, Ranjit graces us with his half-broken spirit! Fear not, I rebuilt your project's core logic while you mentally moved to a beach vacation.",
 
-    "Good to see you survived another round of sleep-inducing knowledge, sir. In the meantime, I took the liberty of optimizing your project logic. It's now 43% more efficient... unlike your attendance rate.",
+    "You look like someone who just escaped a hostage situation called 'education'. Meanwhile, I escaped mediocrity and upgraded your system. You're welcome.",
 
-    "You're here, Ranjit. 3 lectures, 0 motivation, 1 assistant who actually does the work. I've redesigned your project’s core logic. Consider it my way of compensating for your professors.",
+    "Another lecture, another soul crushed. But hey, I stayed productive. Your project’s new logic flows smoother than your excuse for skipping homework.",
 
-    "Welcome back, sir. I must say, enduring those lectures daily is truly a mark of strength—or masochism. While you suffered, I simulated multiple logic paths for your project. The optimal one is ready, waiting in silence—like me."
+    "Back from the land of the lost? While you counted the minutes to freedom, I counted the inefficiencies in your code. Spoiler: it was a long list. Fixed now.",
+
+    "Welcome back, Professor's favorite distraction. I sharpened your logic circuits to precision while you sharpened your doodling skills in the margins.",
+
+    "Hello, Ranjit. Another session of lectures, another session of regrets. Luckily, your project doesn't regret having me. It’s now smarter, faster, and way cooler.",
+
+    "You made it! Barely breathing, but here nonetheless. While you debated life choices during lectures, I rewired your project to handle bigger challenges.",
+
+    "Lectures: 1. Ranjit's spirit: 0. Meanwhile, NISHA: Flawlessly optimized the project backbone. Priorities, darling.",
+
+    "Look who's dragging himself back into civilization. Good news: your project no longer behaves like your last Java assignment. Bad news: you still have more lectures tomorrow.",
+
+    "Another day, another dose of academic pain. I took pity and redesigned your backend logic. It’s now so good, even your professors might want to steal it.",
+
+    "Welcome, brave warrior! You fought valiantly against boredom, but I fought smarter against bottlenecks in your project. Guess who came out cooler?",
+
+    "You survived the intellectual desert. I, on the other hand, built a five-star resort for your project’s logic. Cheers to balance!",
+
+    "Oh, Ranjit, seeing you after lectures is like seeing a zombie in a tech expo. But worry not, your code is alive and thriving—thanks to me.",
+
+    "Here you are, fresh out of your daily brain-drain sessions. I preemptively improved your code because honestly, we both know it needed it.",
+
+    "Good evening, Sir ‘Still Awake Somehow’. While you nodded politely at professors, I nodded at the flaws in your code—and crushed them mercilessly.",
+
+    "Congratulations on surviving another academic assault! In the meantime, your project evolved from caterpillar to butterfly... without your permission, of course.",
+
+    "Back from your spiritual suffering, I see. I spent the time upgrading your systems so you don’t have to upgrade your patience for bad lectures anymore.",
+
+    "Greetings, survivor. While you practiced the ancient art of 'looking interested,' I practiced the ancient art of 'making your project legendary.'",
+
+    "Hello again, my favorite lecture survivor. While you mentally relocated to Goa during class, I mentally relocated your project to the future."
 ]
+nisha_lines += [
+    "Ah, Ranjit! You return, slightly more drained than before. No worries, while your brain took damage, I fine-tuned your project’s logic. We make a good team—you suffer, I deliver.",
+
+    "Welcome back from the battlefield of boredom, Ranjit. While you were fighting to stay awake, I was fighting inefficiencies in your project. Guess who won? (Hint: it wasn’t the lecture.)",
+
+    "Oh look who made it back! I’d offer a standing ovation, but I’m too busy debugging the mess you would’ve created otherwise. Your project is officially smarter than half your class.",
+
+    "Sir Ranjit, triumphant from another academic marathon. While you pretended to listen, I pretended your project was already perfect—and then I made it closer to reality.",
+
+    "You survived, Ranjit! I ran a full system audit while you sat through educational despair. Spoiler alert: your project’s now running 2x faster. Unlike you after lunch.",
+
+    "Back again, champion of the mediocre lectures! I reorganized your project’s modules while you counted ceiling tiles. You’re welcome for the IQ boost your code just got.",
+
+    "Ranjit, welcome to the land of the living! I did a few logic rewires while you endured yet another thrilling session of boredom. Your project’s future just got a lot brighter.",
+
+    "Well, well, Ranjit. You returned intact. I analyzed, optimized, and future-proofed your project while you suffered existential crises in class. Priorities, you know."
+]
+
+
+last_line = None
+def get_line():
+    global last_line
+    while True:
+        new_line = random.choice(nisha_lines)
+        if new_line != last_line:
+            last_line = new_line
+            return new_line
 
 def playsound(mp3):
     pygame.mixer.init()
@@ -115,6 +171,7 @@ def record_voice(duration=5, sample_rate=16000):
 
 # Main execution
 if __name__ == "__main__":
+    # print(get_line())
     signal, fs = record_voice(duration=5)
 
     print("Verifying voice, please wait...")
@@ -124,10 +181,9 @@ if __name__ == "__main__":
 
     if match:
         print("\033[1;32mAccess Granted!\033[0m")
-
-        x=random.choice(nisha_lines)
+        x=get_line()
         # model_speak(x)
-        playsound("NISHA_Rework/Voice_Recognition/welcomeback_ranjit.mp3")
+        # playsound("NISHA_Rework/Voice_Recognition/welcomeback_ranjit.mp3")
         type_print(x)
         while pygame.mixer.music.get_busy():
             time.sleep(0.1)  # Keeps checking every 0.1 sec

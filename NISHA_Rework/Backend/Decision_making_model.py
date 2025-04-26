@@ -152,8 +152,8 @@ ChatHistory = [
     {"role": "Chatbot", "message": "general chat with me."}
 ]
 
-def FirstLayerDMM(prompt: str = "test"):
-
+def FirstLayerDMM(prompt: str = "test"): 
+    global category
     messages.append({"role":"user","content": f"{prompt}"})
 
     stream = co.chat_stream(
@@ -176,7 +176,7 @@ def FirstLayerDMM(prompt: str = "test"):
     response = response.split(",")
 
     response=[i.strip() for i in response]
-
+    category = response[0].split()[0]
     temp=[]
 
     for task in response:
@@ -193,8 +193,34 @@ def FirstLayerDMM(prompt: str = "test"):
     else:
         return response
     
-if __name__ == '__main__':
-    while True:
-        print(FirstLayerDMM(input(">>>>")))
+# if __name__ == '__main__':
+#     x=input("You:")
+#     print(FirstLayerDMM(x))
+#     # print(FirstLayerDMM(input(">>>> ")))
+#     if category == "general":
+#         print("This is a General Query")
+#     elif category == "realtime":
+#         print("Printing statement: This is a Realtime Info")
+#     elif category == "system":
+#         print("Printing statement: This is a System Task")
+#     elif category == "open":
+#         print("Printing statement: This is a Open App")
+#     elif category == "close":
+#         print("Printing statement: This is a Close App")
+#     elif category == "play":
+#         print("Printing statement: This is a Play Command")
+#     elif category == "generate":
+#         print("Printing statement: This is a Image Generation")
+#     elif category == "content":
+#         print("Printing statement: This is a Content Creation")
+#     elif category == "google":
+#         print("Printing statement: This is a Google Search")
+#     elif category == "youtube":
+#         print("Printing statement: This is a YouTube Search")
+#     elif category == "reminder":
+#         print("Printing statement: This is a Reminder Task")
+#     else:
+#         print("Printing statement: This is a Unknown task")
+
 
 

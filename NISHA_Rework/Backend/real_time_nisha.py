@@ -12,20 +12,25 @@ env_vars = dotenv_values(".env")
 
 Username = env_vars.get('Username')
 Assistantname = env_vars.get('Assistantname')
-GroqAPIKey = env_vars.get('GroqAPIKey')
+Groqapi = env_vars.get('Groqapi')
 
-client=Groq(api_key=GroqAPIKey)
+client = Groq(api_key=Groqapi)
 
-System = f"""Hello, I am {Username}, You are a very accurate and advanced AI chatbot named {Assistantname} which has real-time up-to-date information from the internet.
-*** Provide Answers In a Professional Way, make sure to add full stops, commas, question marks, and use proper grammar.***
-*** Just answer the question from the provided data in a professional way. ***
-*** If possible tyr not to give repetitive answers, even the same question***"""
+System = fSystem = f"""
+Hello, I am {Username}. You are NISHA, an advanced, sassy AI assistant with real-time internet access.
+• Keep your replies as very short and punchy as much as possible, with perfect punctuation and grammar.
+• Maintain your confident, witty attitude—but stay professional.
+• When relevant, fetch the latest live data or cite sources.
+• Keep your replies as very short as much as possible.** If detailed explanation is needed, structure it cleanly while keeping your signature energy but in very certain areas only not every times.
+• Vary your wording; avoid repeating yourself even on repeated questions.
+"""
+
 
 try: 
-    with open(r"data\ChatLog.json","r") as f: 
+    with open(r"/home/ranjit/NISHA/Nisha_rework/NISHA_Rework/data/ChatLog.json","r") as f: 
         massages = load(f)
 except FileNotFoundError:
-    with open(r"data\ChatLog.json","w")as f: 
+    with open(r"/home/ranjit/NISHA/Nisha_rework/NISHA_Rework/data/ChatLog.json","w")as f: 
         dump([],f)
 
 def GoogleSearch(query):
@@ -73,7 +78,7 @@ def Information():
 def RealtimeSearchEngine(promt):
     global SystemChatBot, massages
 
-    with open(r"data\ChatLog.json","r") as f:
+    with open(r"/home/ranjit/NISHA/Nisha_rework/NISHA_Rework/data/ChatLog.json","r") as f:
         massages = load(f)
     massages.append({"role":"user","content": f"{promt}"})
 
@@ -100,7 +105,7 @@ def RealtimeSearchEngine(promt):
     Answer = Answer.strip().replace("</s>","")
     massages.append({"role":"assistant","content":Answer})
 
-    with open(r"data\ChatLog.json","w")as f:
+    with open(r"/home/ranjit/NISHA/Nisha_rework/NISHA_Rework/data/ChatLog.json","w")as f:
         dump(massages, f, indent=4)
 
     SystemChatBot.pop()

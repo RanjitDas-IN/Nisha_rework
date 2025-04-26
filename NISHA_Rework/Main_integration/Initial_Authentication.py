@@ -1,4 +1,5 @@
 import sys,os
+from tts_accelarator import speak_text as model_speak
 
 # ──────────────────────────────────── Defining Path ───────────────────────────────────────────
 #  1) Figure out the path to your project root (one level up from this file)
@@ -12,21 +13,22 @@ if PROJECT_ROOT not in sys.path:
 # ──────────────────────────────────── Play MP3 file ───────────────────────────────────────────
 
 def playsound(mp3):
-    pygame.mixer.init()
-    pygame.mixer.music.load(mp3)
-    pygame.mixer.music.play()
+    # import pygame
+    pygame.mixer.init() # type: ignore
+    pygame.mixer.music.load(mp3)    # type: ignore
+    pygame.mixer.music.play()   # type: ignore
  # Keeps checking every 0.1 sec
 
 # ───────────────────────────────────────────────────────────────────────────────
 
 
 
-# ──────────────────────────────────── Importing Voice Model Created & Trained & Optimised by Me ───────────────────────────────────────────
+# ──────────────────────────────────── Importing Voice Model Created, Trained & Optimised by Me ───────────────────────────────────────────
 
-from Voice_Recognition.Real_Time_voice_verification import *
 
 # ──────────────────────────────────── Voice Auth function ───────────────────────────────────────────
 def voice_Auth():
+    from Voice_Recognition.Real_Time_voice_verification import record_voice, is_match_from_signal, random, nisha_lines, type_print, playsound, time
     signal, fs = record_voice(duration=5)
 
     print("Verifying voice, please wait...")
@@ -36,17 +38,15 @@ def voice_Auth():
     if match:
         print("\nAccess Granted!")
         x=random.choice(nisha_lines)
-        # model_speak(x)
-        playsound("NISHA_Rework/Voice_Recognition/welcomeback_ranjit.mp3")
-        type_print(x)
-        while pygame.mixer.music.get_busy():
-            time.sleep(0.1)  # Keeps checking every 0.1 sec
+        model_speak(x)
+
     else:
         print("\nAccess Denied.\n\n")
         
         print("Retrying........")
-        playsound("NISHA_Rework/Main_integration/not_detected.mp3")
-        while pygame.mixer.music.get_busy():
+        import pygame
+        # playsound("NISHA_Rework/Main_integration/not_detected.mp3")
+        while pygame.mixer.music.get_busy():# type: ignore
             time.sleep(0.1) 
         voice_Auth()
 
@@ -55,13 +55,9 @@ def voice_Auth():
 
 
 
-
-
 # ──────────────────────────────────── Main Function ──────────────────────────────────── 
 
 if __name__ == "__main__":
-
-
     voice_Auth()
 
 
