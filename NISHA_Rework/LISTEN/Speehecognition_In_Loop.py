@@ -9,7 +9,7 @@ Link = r"/home/ranjit/NISHA/Nisha_rework/NISHA_Rework/LISTEN/Nisha_voice.html"
 
 chrome_options = Options()
 user_agent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
-chrome_options.add_argument("--headless=new")
+# chrome_options.add_argument("--headless=new")
 chrome_options.add_argument(f"user-agent={user_agent}")
 chrome_options.add_argument("--use-fake-ui-for-media-stream")
 chrome_options.add_argument("--use-fake-device-for-media-stream")
@@ -41,3 +41,9 @@ def SpeechRecognitionLoop(driver):
     except Exception as e:
         print("Speech recognition failed:", e)
         return None
+
+if __name__ == "__main__":
+    x= init_browser()
+    while True:
+        y = SpeechRecognitionLoop(x)
+        print(y)

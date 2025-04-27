@@ -10,6 +10,9 @@ from tts_accelarator import speak_text as model_speak
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
+
+print(PROJECT_ROOT)
+print()
 # ───────────────────────────────────────────────────────────────────────────────
 
 
@@ -24,7 +27,7 @@ from Initial_Authentication import voice_Auth
 from Backend.real_time_nisha import RealtimeSearchEngine
 # ──────────────────────────────────── Play MP3 file ───────────────────────────────────────────
 
-# Setup SDL2 and SDL_mixer
+# ──────────────────────────────────── Setup SDL2 and SDL_mixer to play mp3 & .wav──────────────────────────────────── 
 def init_audio():
     sdl2.SDL_Init(sdl2.SDL_INIT_AUDIO)
     sdl2.sdlmixer.Mix_OpenAudio(44100, sdl2.AUDIO_S16LSB, 2, 512)
@@ -51,29 +54,9 @@ def playsound_loop(mp3, stop_event):
 
 # ───────────────────────────────────────────────────────────────────────────────
 
+# ────────────────────────────────── generate_output ─────────────────────────────────────────────
 
-# ───────────────────────────────────── General Query ──────────────────────────────────────────
-def general_query():
-    global output_from_general_model
-    print(f"\n\033[1m{random.choice(colors)}{x} \033[0m")
-    output_from_general_model = ChatBot(x)
-
-
-# ──────────────────────────────────── Main Function ──────────────────────────────────── 
-# ───────────────────────────────────── General Query ──────────────────────────────────────────
-def real_time_search_engine():
-    global output_from_realtime_model
-    output_from_realtime_model = RealtimeSearchEngine(x)
-
-
-# ──────────────────────────────────── Main Function ──────────────────────────────────── 
-
-if __name__ == "__main__":
-    # voice_Auth()
-    x=input("You: ")
-    from Backend.Decision_making_model import (FirstLayerDMM)
-    print(FirstLayerDMM(x))         #   ['general hello dear']
-    from Backend.Decision_making_model import (category)
+def generate_output():
     if category == "general":
         general_query()
         print(output_from_general_model)
@@ -139,3 +122,32 @@ if __name__ == "__main__":
         
         print("Printing statement: This is a Unknown task")
 
+# ───────────────────────────────────────────────────────────────────────────────
+
+
+# ───────────────────────────────────── General Query ──────────────────────────────────────────
+def general_query():
+    global output_from_general_model
+    print(f"\n\033[1m{random.choice(colors)}{x} \033[0m")
+    output_from_general_model = ChatBot(x)
+
+
+# ──────────────────────────────────── Main Function ──────────────────────────────────── 
+# ───────────────────────────────────── General Query ──────────────────────────────────────────
+def real_time_search_engine():
+    global output_from_realtime_model
+    output_from_realtime_model = RealtimeSearchEngine(x)
+
+
+# ──────────────────────────────────── Main Function ──────────────────────────────────── 
+
+if __name__ == "__main__":
+    voice_Auth()
+
+
+    x=input("You: ")
+    from Backend.Decision_making_model import (FirstLayerDMM)
+    print(FirstLayerDMM(x))         #   ['general hello dear']
+    from Backend.Decision_making_model import (category)
+    generate_output()
+    
