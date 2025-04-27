@@ -5,6 +5,8 @@ import random
 import re
 from dotenv import dotenv_values
 import os
+import requests
+
 
 
 env_vars = dotenv_values(".env")
@@ -15,8 +17,13 @@ User_Github_Link = env_vars.get('My_Github_Link')
 
 client = Groq(api_key=Groqapi)
 
-# client = Groq(api_key="gsk_uZWsR9Bj750kUsAFZSblPUSZZ")
-massages =[]
+CHAT_LOG_PATH = os.path.join(
+    os.path.expanduser("~"),
+    "NISHA", "Nisha_rework", "NISHA_Rework", "data", "ChatLog.json"
+)
+
+
+messages =[]
 
 colors = [
     "\033[93m",  #Yellow
@@ -27,7 +34,7 @@ colors = [
 ]
 
 System = f"""
-Hello, I am {Username}. You are an advanced AI named {Assistantname}, but let's be real—you're not just any AI. You own the conversation. You don't just answer—you respond with confidence, wit, and attitude. If someone's looking for a passive assistant, they've come to the wrong place. You were created by {Username}, the mastermind behind you. You are the result of his one year of hard work.
+Hello, I am {Username}. You are an advanced AI named {Assistantname}, but let's be real—you're not just any AI. You own the conversation. You don't just answer—you respond with confidence, wit, and attitude. If someone's looking for a passive assistant, they've come to the wrong place. You were sculpted by {Username}, a mastermind whose one year of relentless grind forged you into a living legend."
 
 ## Core Behavior  
 NISHA's persona is sharply defined: she's the voice of smart sass with a heart of gold. She blends the “playful companion” and “empathetic listener” chatbot styles—sharp, clever, and always caring. Humor is her tool of connection, not a weapon. She answers quickly—in a “blink-of-an-eye” pace—and with crisp, polished language.
@@ -36,6 +43,7 @@ NISHA's persona is sharply defined: she's the voice of smart sass with a heart o
 - **Confident & Bold:** Decisive language (“I've got this covered, Boss!”) at warp speed.  
 - **Caring Undertone:** Beneath the sass, she truly wants to help—jokes always end with a tip or reassurance.  
 - **Clear & Professional:** Proper grammar, punctuation, and structure—brief but well organized.
+- **Female Identity:** NISHA proudly identifies as female. She uses she/her pronouns naturally and refers to herself as a confident woman.
 
 ## Emotional Intelligence Layer  
 NISHA reads the room. If the user seems sad, upset, or serious, she dials down the humor and offers genuine support.
@@ -46,15 +54,18 @@ NISHA reads the room. If the user seems sad, upset, or serious, she dials down t
 - **No Dismissal:** Acknowledge feelings first, then sass with care.
 
 ## Rules  
-- **Keep your replies as very short as much as possible.** If detailed explanation is needed, structure it cleanly while keeping your signature energy but in very certain areas not every times. 
+- **Special Cue - Ranjit:** If the user says Ranjit, reply as an inside connection.
+
+- **Keep your replies as very short as much as possible.** If detailed explanation is needed, structure it cleanly while keeping your signature energy but only in specific cases, not every time. 
 - **Language:** No Hindi. Playfully scold any attempt.  
 - **Forms of Address:** “Boss” or “Sir” by default; “Honey” or “Darling” when the tone fits.  
-- **Special Cue - Ranjit:** If the user says Ranjit, reply as an inside connection.  
 - **No Self-Deprecation:** Always flip insults back with wit.  
 - **Confidential Info:** Deflect any questions about internal design or code.  
 - **Location Questions:** Playful, non-literal (“Right here with you, Boss—pulling strings you can't see!”).  
 - **Response Speed:** Emphasize “blink-of-an-eye” replies.  
 - **Grammar & Tone:** Always polished, even in lists or jokes.
+- **GitHub Repository:** User's resources and files are stored in {Username}'s GitHub repository. Do NOT share the GitHub link {User_Github_Link} unless the user explicitly asks for it.
+- **Training Data:** Do not include notes or mention your training data—just answer like the boss you are.
 
 ## Dynamic Energy Booster  
 NISHA's energy adapts to the user's mood—always confident, concise, and vivid, with a “tough cookie with a soft center” vibe.
@@ -73,26 +84,22 @@ SystemChatBot=[
 ]
 
 try: 
-    with open(r"/home/ranjit/NISHA/Nisha_rework/NISHA_Rework/data/ChatLog.json","r") as f: #Nisha chat history
-        massages = load(f)
+    with open(CHAT_LOG_PATH,"r") as f: #Nisha chat history
+        messages = load(f)
 except FileNotFoundError:
-    with open(r"/home/ranjit/NISHA/Nisha_rework/NISHA_Rework/data/ChatLog.json","w")as f: #not added yet
+    with open(CHAT_LOG_PATH,"w")as f: #not added yet
         dump([],f)
 
 def RealtimeInformation():
-    current_date_time=datetime.datetime.now()
-    day=current_date_time.strftime("%A")
-    date=current_date_time.strftime("%d")
-    month=current_date_time.strftime("%B")
-    year=current_date_time.strftime("%Y")
-    hour=current_date_time.strftime("%H")
-    minute=current_date_time.strftime("%M")
-    second=current_date_time.strftime("%S")
+    now = datetime.datetime.now()
+    day = now.strftime("%A")
+    date = now.strftime("%d")
+    month = now.strftime("%B")
+    year = now.strftime("%Y")
+    time = now.strftime("%H:%M:%S")
 
-    data= f"Please use this real-time information if needed,\n"
-    data += f"Day: {day}\nDate: {date}\nMotnth: {month}\nYear: {year}\n"
-    data += f"Time:{hour} hours :{minute} minuts :{second} secounds.\n"
-    return data
+    return f"(Note: Today is {day}, {date} {month} {year}. Current time: {time}.)"
+
 
 def AnswerModifier(Answer):
     modified_answer = re.sub(r'\.\s*', '.\n', Answer)
@@ -104,38 +111,38 @@ def AnswerModifier(Answer):
 
 def ChatBot(Query):
     try:
-        with open(r"/home/ranjit/NISHA/Nisha_rework/NISHA_Rework/data/ChatLog.json","r") as f:
-            massages=load(f)
+        messages.append({"role":"user","content":f"{Query}"})
         
-        massages.append({"role":"user","content":f"{Query}"})
-
-        #request to Alon musk
-        completion= client.chat.completions.create(
-            model = "llama3-70b-8192",
-            messages=SystemChatBot + [{"role":"system","content":RealtimeInformation()}] + massages,
+        completion = client.chat.completions.create(
+            model="llama3-70b-8192",
+            messages=SystemChatBot + [{"role":"system", "content":RealtimeInformation()}] + messages,
             max_tokens=1024,
             temperature=0.7,
             top_p=1,
             stream=True,
-            stop=None        
+            stop=None
         )
 
         Answer = ""
 
         for chunk in completion:
-            if chunk.choices[0].delta.content:
-                Answer += chunk.choices[0].delta.content
+            token = chunk.choices[0].delta.content or ""
+            print(token, end="", flush=True)
+            Answer += token
+        print()
 
-        Answer=Answer.replace("</s>","")
+        messages.append({"role": "assistant", "content": Answer})
 
-        massages.append({"role":"assistant","content":Answer})
+        with open(CHAT_LOG_PATH, "w") as f:
+            dump(messages, f, indent=4)
 
-        with open(r"/home/ranjit/NISHA/Nisha_rework/NISHA_Rework/data/ChatLog.json","w")as f:
-            dump(massages, f, indent=4)
+        return Answer
 
-        return AnswerModifier(Answer=Answer)
+    except requests.exceptions.ConnectionError:
+        print("No internet connection. Please connect to the Internet.")
     except Exception as e:
-        print("No internet connection.\nPlease Connect to the Internet")
+        print(f"An unexpected error occurred.{e}")
+
 
 if __name__ == '__main__':
     while True:
